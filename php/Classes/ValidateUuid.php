@@ -1,5 +1,5 @@
 <?php
-namespace DeepDiveCoders\ObjectOriented;
+namespace Leeyo84\ObjectOriented;
 
 require_once(dirname(__DIR__, 1) . "/vendor/autoload.php");
 

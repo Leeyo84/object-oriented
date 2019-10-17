@@ -1,10 +1,11 @@
 <?php
-namespace DeepDiveCoders\ObjectOriented;
+namespace Leeyo84\ObjectOriented;
 
 require_once("autoload.php");
+
 require_once (dirname(__DIR__)) . "/vendor/autoload.php";
 
-
+use http\Url;
 use Ramsey\Uuid\Uuid;
 
 /**
@@ -23,47 +24,49 @@ class Author implements \JsonSerializable {
 	private $AuthorId;
 	/**
 	 * this is the activation token for the Author
-	 * @var Uuid $AuthorActivationToken
+	 * @var string $AuthorActivationToken
 	 */
 	private $AuthorActivationToken;
 	/**
 	 * this is the Authors avatar url
-	 * @var AuthorAvatarUrl
+	 * @var string $AuthorAvatarUrl
 	 */
 	private $AuthorAvatarUrl;
 	/**
 	 * this is the Author email
-	 * @var AuthorEmail
+	 * @var string $AuthorEmail
 	 */
 	private $AuthorEmail;
 	/**
 	 * this is the Hash for the Author
-	 * @var $AuthorHash
+	 * @var string $AuthorHash
 	 */
 	private $AuthorHash;
 	/**
 	 * this is the Authors username
-	 * @var $AuthorUsername
+	 * @var string $AuthorUsername
 	 */
 	private $AuthorUsername;
 
 	/**
-	 * constructor for this Tweet
+	 * constructor for this author
 	 *
 	 * @param string|Uuid $newAuthorId id of this Author or null if a new Author
-	 * @param string|Uuid $newAuthorActivationToken id of the activation token
-	 * @param string $newAuthorAvatarUrl string containing actual tweet data
-	 * @param \DateTime|string|null $newTweetDate date and time Tweet was sent or null if set to current date and time
+	 * @param string $newAuthorActivationToken activation token
+	 * @param string $newAuthorAvatarUrl
+	 * @param string $newAuthorEmail
+	 * @param string $newAuthorHash
+	 * @param string $newAuthorUsername
 	 * @throws \InvalidArgumentException if data types are not valid
 	 * @throws \RangeException if data values are out of bounds (e.g., strings too long, negative integers)
 	 * @throws \TypeError if data types violate type hints
 	 * @throws \Exception if some other exception occurs
 	 * @Documentation https://php.net/manual/en/language.oop5.decon.php
 	 **/
-	public function __construct($newAuthorId, $newAuthorActivationToken, string $newAuthorEmail, $newAuthorAvatarUrl, $newAuthorHash, $newAuthorUsername) {
+	public function __construct($newAuthorId, $newAuthorActivationToken,  $newAuthorAvatarUrl, $newAuthorEmail, $newAuthorHash, $newAuthorUsername) {
 		try {
 			$this->setAuthorId($newAuthorId);
-			$this->setNewAuthorActivationToken($newAuthorActivationToken);
+			$this->setAuthorActivationToken($newAuthorActivationToken);
 			$this->setAuthorAvatarUrl($newAuthorAvatarUrl);
 			$this->setAuthorEmail($newAuthorEmail);
 			$this->setAuthorHash($newAuthorHash);
@@ -75,10 +78,6 @@ class Author implements \JsonSerializable {
 			throw(new $exceptionType($exception->getMessage(), 0, $exception));
 		}
 	}
-
-
-
-
 	/**
 	 * accessor method for author id
 	 *
@@ -87,7 +86,6 @@ class Author implements \JsonSerializable {
 	public function getAuthorId(){
 		return ($this->authorId);
 	}
-
 	/**
 	 * mutator method for author id
 	 *
@@ -103,21 +101,59 @@ class Author implements \JsonSerializable {
 		$this->authorId = intval($newAuthorId);
 	}
 	/**
+	 * accessor method for activation token
+	 *
+	 * @return int value of the activation token
+	 **/
+	public function getActivationToken(){
+		return ($this->activationToken());
+	}
+	/**
 	 * mutator method for author activation token
 	 *
 	 * @param int $newActivationToken new value of activation token
 	 * @Throws UnexpectedValueException if $newActivationToken is not an integer
 	 **/
-	public function setActivationToken($newActivationToken) {
-		$newActivationToken = filter_var($newActivationToken,FILTER_VALIDATE_INT);
-		if($newActivationToken === false) {
+	public function setAuthorActivationToken($newAuthorActivationToken) {
+		$newAuthorActivationToken = filter_var($newAuthorActivationToken,FILTER_VALIDATE_INT);
+		if($newAuthorActivationToken === false) {
 			throw (new UnexpectedValueException("activation token is not valid"));
 		}
 		// convert and store the activationToken
-		$this->activationToken = intval($newActivationToken);
+		$this->authorActivationToken = intval($newAuthorActivationToken);
 	}
 	/**
-	 * mutator method for author avatar url
+	 * accessor method for avatar url
+	 *
+	 * @return int value of the avatar url
+	 **/
+	public function getAvatarUrl(){
+		return ($this->avatarUrl());
+	}
+	/**
+	 * mutator for author avatar url
+	 *
+	 * @param string $newAuthorAvatarUrl
+	 * @Throws UnexpectedValueException if $newAuthorAvatarUrl is not valid
+	 */
+	public function setAuthorAvatarUrl($newAuthorAvatarUrl) {
+		$newAuthorAvatarUrl = filter_var($newAuthorAvatarUrl,FILTER_VALIDATE_INT);
+		if($newAuthorAvatarUrl === false) {
+			throw (new UnexpectedValueException("avatar url is not valid"));
+		}
+		// convert and store the activationToken
+		$this->AuthorAvatarUrl = intval($newAuthorAvatarUrl);
+	}
+	/**
+	 * accessor method for author email
+	 *
+	 * @return int value of the author email
+	 **/
+	public function getAuthorEmail(){
+		return ($this->authorEmail());
+	}
+	/**
+	 * mutator method for author email
 	 *
 	 * @param string $newAuthorEmail new value of email
 	 * @Throws UnexpectedValueException if $newAuthorEmail is not valid
@@ -125,10 +161,18 @@ class Author implements \JsonSerializable {
 	public function setAuthorEmail($newAuthorEmail) {
 		$newAuthorEmail = filter_var($newAuthorEmail,FILTER_SANITIZE_EMAIL);
 		if($newAuthorEmail === false) {
-			throw (new UnexpectedValueException("email is not a valid string"));
+			throw (new UnexpectedValueException("email is not a valid email"));
 		}
 		//  store the author email
-		$this->AuthorEmail = intval($newAuthorEmail);
+		$this->authorEmail = intval($newAuthorEmail);
+	}
+	/**
+	 * accessor method for author hash
+	 *
+	 * @return int value of the author hash
+	 **/
+	public function getAuthorHash(){
+		return ($this->authorHash());
 	}
 	/**
 	 * mutator method for author hash
@@ -143,6 +187,14 @@ class Author implements \JsonSerializable {
 		}
 		// convert and store the author hash
 		$this->authorHash = intval($newAuthorHash);
+	}
+	/**
+	 * accessor method for author username
+	 *
+	 * @return int value of the author username
+	 **/
+	public function getAuthorUsername(){
+		return ($this->authorUsername());
 	}
 	/**
 	 * mutator method for author username
