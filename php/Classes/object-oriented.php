@@ -1,10 +1,11 @@
 <?php
-namespace DeepDiveCoders\ObjectOrientated;
+namespace DeepDiveCoders\ObjectOriented;
 
-require_once ("autoload.php");
-require_once (dirname(__DIR__)) . "/vendor/autoload.php");
+require_once("autoload.php");
+require_once (dirname(__DIR__)) . "/vendor/autoload.php";
 
-use DeepDiveCoders\ObjectOrientated\ValidateDate;use http\Exception\UnexpectedValueException;use Ramsey\Uuid\Uuid;
+
+use Ramsey\Uuid\Uuid;
 
 /**
  *  gives author access to make changes
