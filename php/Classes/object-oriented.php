@@ -15,7 +15,6 @@ use Ramsey\Uuid\Uuid;
  * @author Leonela Gutierrez <Leonele_Gutierrez@hotmail.com>
  */
 class Author implements \JsonSerializable {
-	use ValidateDate;
 	use ValidateUuid;
 	/**
 	 * id for this Author; this is the primary key
