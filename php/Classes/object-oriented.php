@@ -1,15 +1,15 @@
 <?php
-namespace DeepDiveCoders\ObjectOrientation;
+namespace DeepDiveCoders\ObjectOrientated;
 
 require_once ("autoload.php");
 require_once (dirname(__DIR__)) . "/vendor/autoload.php");
 
-use http\Exception\UnexpectedValueException;use Ramsey\Uuid\Uuid;
+use DeepDiveCoders\ObjectOrientated\ValidateDate;use http\Exception\UnexpectedValueException;use Ramsey\Uuid\Uuid;
 
 /**
- *  h1 short description of what the class does.
+ *  gives author access to make changes
  *
- * p more detailed description, a couple of sentences.
+ * Author will be able to make changes to is author profile, including author id, avatar, email and username.
  *
  * @author Leonela Gutierrez <Leonele_Gutierrez@hotmail.com>
  */
@@ -46,6 +46,37 @@ class Author implements \JsonSerializable {
 	 * @var $AuthorUsername
 	 */
 	private $AuthorUsername;
+
+	/**
+	 * constructor for this Tweet
+	 *
+	 * @param string|Uuid $newAuthorId id of this Author or null if a new Author
+	 * @param string|Uuid $newAuthorActivationToken id of the activation token
+	 * @param string $newAuthorAvatarUrl string containing actual tweet data
+	 * @param \DateTime|string|null $newTweetDate date and time Tweet was sent or null if set to current date and time
+	 * @throws \InvalidArgumentException if data types are not valid
+	 * @throws \RangeException if data values are out of bounds (e.g., strings too long, negative integers)
+	 * @throws \TypeError if data types violate type hints
+	 * @throws \Exception if some other exception occurs
+	 * @Documentation https://php.net/manual/en/language.oop5.decon.php
+	 **/
+	public function __construct($newAuthorId, $newAuthorActivationToken, string $newAuthorEmail, $newAuthorAvatarUrl, $newAuthorHash, $newAuthorUsername) {
+		try {
+			$this->setAuthorId($newAuthorId);
+			$this->setNewAuthorActivationToken($newAuthorActivationToken);
+			$this->setAuthorAvatarUrl($newAuthorAvatarUrl);
+			$this->setAuthorEmail($newAuthorEmail);
+			$this->setAuthorHash($newAuthorHash);
+			$this->setAuthorUsername($newAuthorUsername);
+		}
+			//determine what exception type was thrown
+		catch(\InvalidArgumentException | \RangeException | \Exception | \TypeError $exception) {
+			$exceptionType = get_class($exception);
+			throw(new $exceptionType($exception->getMessage(), 0, $exception));
+		}
+	}
+
+
 
 
 	/**
@@ -106,7 +137,7 @@ class Author implements \JsonSerializable {
 	 * @Throws UnexpectedValueException if $newAuthorHash is not an integer
 	 **/
 	public function setAuthorHash($newAuthorHash) {
-		$newAuthorHash= filter_var($newAuthorHash,FILTER_VALIDATE_INT;
+		$newAuthorHash= filter_var($newAuthorHash,FILTER_VALIDATE_INT);
 		if($newAuthorHash === false) {
 			throw (new UnexpectedValueException("author hash is not valid"));
 		}
@@ -126,6 +157,17 @@ class Author implements \JsonSerializable {
 		}
 		//  store the author username
 		$this->AuthorUsername = intval($newAuthorUserName);
+	}
+
+	/**
+	 * Specify data which should be serialized to JSON
+	 * @link https://php.net/manual/en/jsonserializable.jsonserialize.php
+	 * @return mixed data which can be serialized by <b>json_encode</b>,
+	 * which is a value of any type other than a resource.
+	 * @since 5.4.0
+	 */
+	public function jsonSerialize() {
+		// TODO: Implement jsonSerialize() method.
 	}
 }
 ?>
