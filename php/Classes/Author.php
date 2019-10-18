@@ -5,8 +5,8 @@ require_once("autoload.php");
 
 require_once (dirname(__DIR__)) . "/vendor/autoload.php";
 
-use http\Exception\UnexpectedValueException;
-use http\Url;
+
+use http\Exception\InvalidArgumentException;
 use Ramsey\Uuid\Uuid;
 
 /**
@@ -84,14 +84,15 @@ class Author implements \JsonSerializable {
 	 *
 	 * @return int value of the author id
 	 **/
-	public function getAuthorId(){
+	public function getAuthorId(): Uuid {
 		return ($this->authorId);
 	}
 	/**
 	 * mutator method for author id
 	 *
-	 * @param int $newAuthoId new value of author id
-	 * @Throws UnexpectedValueException if $newAuthorId is not an integer
+	 * @param  Uuid|string$newAuthorId new author id
+	 * @param \RangeException if $newAuthorId is not positive
+	 * @Throws \TypeError if $newAuthorId is not a uuid
 	 **/
 	public function setAuthorId($newAuthorId): void {
 		try {
@@ -100,6 +101,7 @@ class Author implements \JsonSerializable {
 			$exceptionType = get_class($exception);
 			throw(new $exceptionType($exception->getMessage(), 0, $exception));
 		}
+
 		// convert and store the profile id
 		$this->authorId = $uuid;
 	}
@@ -118,7 +120,7 @@ class Author implements \JsonSerializable {
 	 * @Throws UnexpectedValueException if $newActivationToken is not an integer
 	 **/
 	public function setAuthorActivationToken($newAuthorActivationToken) {
-		$newAuthorActivationToken = filter_var($newAuthorActivationToken,FILTER_VALIDATE_INT);
+		$newAuthorActivationToken = filter_var($newAuthorActivationToken,FILTER_SANITIZE_STRING);
 		if($newAuthorActivationToken === false) {
 			throw (new UnexpectedValueException("activation token is not valid"));
 		}
@@ -130,24 +132,26 @@ class Author implements \JsonSerializable {
 	 *
 	 * @return int value of the avatar url
 	 **/
-	public function getAvatarUrl(){
-		return ($this->avatarUrl());
+	public function getAuthorAvatarUrl(): string {
+		return ($this->authorAvatarUrl);
 	}
 	/**
 	 * mutator for author avatar url
 	 *
-	 * @param string $newAuthorAvatarUrl
-	 * @Throws UnexpectedValueException if $newAuthorAvatarUrl is not valid
+	 * @param string $newAuthorAvatarUrl new value of the avatar url
+	 * @throws \UnexpectedValueException if $newAuthorAvatarUrl is not a string or insecure
+	 * @throws \RangeException if $newAuthorAvatarUrl is >32 characters
+	 * @throws \TypeError if $newAuthorAvatar is not a string
 	 */
 	public function setAuthorAvatarUrl($newAuthorAvatarUrl) {
-		$newAuthorAvatarUrl = filter_var($newAuthorAvatarUrl,FILTER_VALIDATE_INT);
-		if($newAuthorAvatarUrl === false) {
-			throw (new UnexpectedValueException("avatar url is not valid"));
+		//verify the at handle is secure
+		$newAuthorAvatarUrl = trim($newAuthorAvatarUrl);
+		$newAuthorAvatarUrl = filter_var($newAuthorAvatarUrl, FILTER_VALIDATE_URL);
+		if($newAuthorAvatarUrl=== false) {
+			throw (new \UnexpectedValueException("avatar url is not valid or empty"));
 		}
-		if ($newAuthorAvatarUrl > 255)
-			throw (new UnexpectedValueException("too many numbers"));
 		// convert and store the activationToken
-		$this->AuthorAvatarUrl = intval($newAuthorAvatarUrl);
+		$this->authorAvatarUrl = $newAuthorAvatarUrl;
 	}
 	/**
 	 * accessor method for author email
@@ -161,7 +165,7 @@ class Author implements \JsonSerializable {
 	 * mutator method for author email
 	 *
 	 * @param string $newAuthorEmail new value of email
-	 * @Throws UnexpectedValueException if $newAuthorEmail is not valid
+	 * @Throws  if $newAuthorEmail is not valid
 	 **/
 	public function setAuthorEmail($newAuthorEmail) {
 		$newAuthorEmail = filter_var($newAuthorEmail,FILTER_SANITIZE_EMAIL);
@@ -176,23 +180,42 @@ class Author implements \JsonSerializable {
 	 *
 	 * @return int value of the author hash
 	 **/
-	public function getAuthorHash(){
-		return ($this->authorHash());
+	public function getAuthorHash(): string {
+		return $this->authorHash;
 	}
 	/**
 	 * mutator method for author hash
 	 *
-	 * @param int $newAuthorHash new value of author hash
-	 * @Throws UnexpectedValueException if $newAuthorHash is not an integer
+	 * @param string $newAuthorHash
+	 * @throws \InvalidArgumentException if the hash is not secure
+	 * @throws \RangeException if the hash is not 97 characters
+	 * @throws \TypeErrorif profile hash is not a string
 	 **/
-	public function setAuthorHash($newAuthorHash) {
-		$newAuthorHash= filter_var($newAuthorHash,FILTER_VALIDATE_INT);
-		if($newAuthorHash === false) {
-			throw (new UnexpectedValueException("author hash is not valid"));
+	public function setAuthorHash(string $newAuthorHash) : void {
+		//enforce that the hash is properly formatted
+		$newAuthorHash = trim($newAuthorHash);
+		$newAuthorHash = strtolower($newAuthorHash);
+		if(empty($newAuthorHash) === true) {
+			throw (new \InvalidArgumentException("author hash is not valid"));
 		}
-		// convert and store the author hash
-		$this->authorHash = intval($newAuthorHash);
+		$newAuthorHash = trim($newAuthorHash);
+		$newAuthorHash = strtolower($newAuthorHash);
+		if(empty($newAuthorHash) === true) {
+			throw(new \InvalidArgumentException("author password hash empty or insecure"));
+		}
+		//enforce that the hash is a string representation of a hexadecimal
+		if(!ctype_xdigit($newAuthorHash)) {
+			throw(new \InvalidArgumentException("author password hash is empty or insecure"));
+		}
+		//enforce that the hash is exactly 128 characters.
+		if(strlen($newAuthorHash) !== 97) {
+			throw(new \RangeException("author hash must be 97 characters"));
+		}
+		//store the hash
+		$this->authorHash = $newAuthorHash;
 	}
+		//enforce the hash is a string representation of a hexadecimal
+
 	/**
 	 * accessor method for author username
 	 *
