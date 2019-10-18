@@ -5,6 +5,7 @@ require_once("autoload.php");
 
 require_once (dirname(__DIR__)) . "/vendor/autoload.php";
 
+use http\Exception\UnexpectedValueException;
 use http\Url;
 use Ramsey\Uuid\Uuid;
 
@@ -92,13 +93,15 @@ class Author implements \JsonSerializable {
 	 * @param int $newAuthoId new value of author id
 	 * @Throws UnexpectedValueException if $newAuthorId is not an integer
 	 **/
-	public function setAuthorId($newAuthorId) {
-		$newAuthorId = filter_var($newAuthorId,FILTER_VALIDATE_INT);
-		if($newAuthorId === false) {
-			throw (new UnexpectedValueException("profile id is not a valid integer"));
+	public function setAuthorId($newAuthorId): void {
+		try {
+				$uuid = self::validateUuid($newAuthorId);
+		} catch(\InvalidArgumentException | \RangeException | \Exception | \TypeError $exception) {
+			$exceptionType = get_class($exception);
+			throw(new $exceptionType($exception->getMessage(), 0, $exception));
 		}
 		// convert and store the profile id
-		$this->authorId = intval($newAuthorId);
+		$this->authorId = $uuid;
 	}
 	/**
 	 * accessor method for activation token
@@ -141,6 +144,8 @@ class Author implements \JsonSerializable {
 		if($newAuthorAvatarUrl === false) {
 			throw (new UnexpectedValueException("avatar url is not valid"));
 		}
+		if ($newAuthorAvatarUrl > 255)
+			throw (new UnexpectedValueException("too many numbers"));
 		// convert and store the activationToken
 		$this->AuthorAvatarUrl = intval($newAuthorAvatarUrl);
 	}
