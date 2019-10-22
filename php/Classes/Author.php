@@ -25,7 +25,7 @@ class Author implements \JsonSerializable {
 	private $authorId;
 	/**
 	 * this is the activation token for the Author
-	 * @var string $AuthorActivationToken
+	 * @var string $authorActivationToken
 	 */
 	private $authorActivationToken;
 	/**
@@ -64,7 +64,7 @@ class Author implements \JsonSerializable {
 	 * @throws \Exception if some other exception occurs
 	 * @Documentation https://php.net/manual/en/language.oop5.decon.php
 	 **/
-	public function __construct($newAuthorId, ?string $newAuthorActivationToken,  string $newAuthorAvatarUrl, string $newAuthorEmail, ?string $newAuthorHash, ?string $newAuthorUsername) {
+	public function __construct($newAuthorId, ?string $newAuthorActivationToken,  string $newAuthorAvatarUrl, string $newAuthorEmail, ?string $newAuthorHash, string $newAuthorUsername) {
 		try {
 			$this->setAuthorId($newAuthorId);
 			$this->setAuthorActivationToken($newAuthorActivationToken);
@@ -230,21 +230,21 @@ class Author implements \JsonSerializable {
 	 *
 	 * @return value of the author username
 	 **/
-	public function getAuthorUsername() {
+	public function getAuthorUsername(): string {
 		return $this->authorUsername;
 	}
 	/**
 	 * mutator method for author username
 	 *
 	 * @param string $newAuthorUsername new value of username
-	 * @Throws InvalidArgumentException if author username is not valid
+	 * @throws InvalidArgumentException if author username is not valid
 	 * @throws \TypeError if username is not a string
 	 **/
 	public function setAuthorUsername(string $newAuthorUsername): void {
 		//verify username is secure
 		$newAuthorUsername = trim($newAuthorUsername);
-		$newAuthorUsername = filter_var($newAuthorUsername,FILTER_SANITIZE_STRING);
-		if(empty($newAuthorUsername === true)) {
+		$newAuthorUsername = filter_var($newAuthorUsername,FILTER_SANITIZE_STRING,);
+		if(empty($newAuthorUsername) === true) {
 			throw (new \InvalidArgumentException("username is not valid"));
 		}
 		//  store the author username
