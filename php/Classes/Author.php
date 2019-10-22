@@ -64,7 +64,7 @@ class Author implements \JsonSerializable {
 	 * @throws \Exception if some other exception occurs
 	 * @Documentation https://php.net/manual/en/language.oop5.decon.php
 	 **/
-	public function __construct($newAuthorId, ?string $newAuthorActivationToken,  string $newAuthorAvatarUrl, string $newAuthorEmail, ?string $newAuthorHash, string $newAuthorUsername) {
+	public function __construct($newAuthorId, ?string $newAuthorActivationToken, string $newAuthorAvatarUrl, string $newAuthorEmail, ?string $newAuthorHash, string $newAuthorUsername) {
 		try {
 			$this->setAuthorId($newAuthorId);
 			$this->setAuthorActivationToken($newAuthorActivationToken);
@@ -72,13 +72,13 @@ class Author implements \JsonSerializable {
 			$this->setAuthorEmail($newAuthorEmail);
 			$this->setAuthorHash($newAuthorHash);
 			$this->setAuthorUsername($newAuthorUsername);
-		}
-		//determine what exception type was thrown
+		} //determine what exception type was thrown
 		catch(\InvalidArgumentException | \RangeException | \Exception | \TypeError $exception) {
 			$exceptionType = get_class($exception);
 			throw(new $exceptionType($exception->getMessage(), 0, $exception));
 		}
 	}
+
 	/**
 	 * accessor method for author id
 	 *
@@ -87,16 +87,17 @@ class Author implements \JsonSerializable {
 	public function getAuthorId(): Uuid {
 		return ($this->authorId);
 	}
+
 	/**
 	 * mutator method for author id
 	 *
-	 * @param  Uuid|string$newAuthorId new author id
+	 * @param Uuid|string $newAuthorId new author id
 	 * @param \RangeException if $newAuthorId is not positive
 	 * @Throws \TypeError if $newAuthorId is not a uuid
 	 **/
 	public function setAuthorId($newAuthorId): void {
 		try {
-				$uuid = self::validateUuid($newAuthorId);
+			$uuid = self::validateUuid($newAuthorId);
 		} catch(\InvalidArgumentException | \RangeException | \Exception | \TypeError $exception) {
 			$exceptionType = get_class($exception);
 			throw(new $exceptionType($exception->getMessage(), 0, $exception));
@@ -105,14 +106,16 @@ class Author implements \JsonSerializable {
 		// convert and store the profile id
 		$this->authorId = $uuid;
 	}
+
 	/**
 	 * accessor method for account activation token
 	 *
 	 * @return string value of the activation token
 	 */
-	public function getAuthorActivationToken() : ?string {
+	public function getAuthorActivationToken(): ?string {
 		return ($this->authorActivationToken);
 	}
+
 	/**
 	 * mutator method for account activation token
 	 *
@@ -136,6 +139,7 @@ class Author implements \JsonSerializable {
 		}
 		$this->authorActivationToken = $newAuthorActivationToken;
 	}
+
 	/**
 	 * accessor method for avatar url
 	 *
@@ -144,6 +148,7 @@ class Author implements \JsonSerializable {
 	public function getAuthorAvatarUrl(): string {
 		return ($this->authorAvatarUrl);
 	}
+
 	/**
 	 * mutator for author avatar url
 	 *
@@ -156,20 +161,22 @@ class Author implements \JsonSerializable {
 		//verify the at handle is secure
 		$newAuthorAvatarUrl = trim($newAuthorAvatarUrl);
 		$newAuthorAvatarUrl = filter_var($newAuthorAvatarUrl, FILTER_VALIDATE_URL);
-		if($newAuthorAvatarUrl=== false) {
+		if($newAuthorAvatarUrl === false) {
 			throw (new \UnexpectedValueException("avatar url is not valid or empty"));
 		}
 		// convert and store the activationToken
 		$this->authorAvatarUrl = $newAuthorAvatarUrl;
 	}
+
 	/**
 	 * accessor method for author email
 	 *
 	 * @return int value of the author email
 	 **/
-	public function getAuthorEmail(){
+	public function getAuthorEmail() {
 		return ($this->authorEmail());
 	}
+
 	/**
 	 * mutator method for author email
 	 *
@@ -177,13 +184,14 @@ class Author implements \JsonSerializable {
 	 * @Throws  if $newAuthorEmail is not valid
 	 **/
 	public function setAuthorEmail($newAuthorEmail) {
-		$newAuthorEmail = filter_var($newAuthorEmail,FILTER_SANITIZE_EMAIL);
+		$newAuthorEmail = filter_var($newAuthorEmail, FILTER_SANITIZE_EMAIL);
 		if($newAuthorEmail === false) {
 			throw (new UnexpectedValueException("email is not a valid email"));
 		}
 		//  store the author email
 		$this->authorEmail = intval($newAuthorEmail);
 	}
+
 	/**
 	 * accessor method for author hash
 	 *
@@ -192,6 +200,7 @@ class Author implements \JsonSerializable {
 	public function getAuthorHash(): string {
 		return $this->authorHash;
 	}
+
 	/**
 	 * mutator method for author hash
 	 *
@@ -200,7 +209,7 @@ class Author implements \JsonSerializable {
 	 * @throws \RangeException if the hash is not 97 characters
 	 * @throws \TypeErrorif profile hash is not a string
 	 **/
-	public function setAuthorHash(string $newAuthorHash) : void {
+	public function setAuthorHash(string $newAuthorHash): void {
 		//enforce that the hash is properly formatted
 		$newAuthorHash = trim($newAuthorHash);
 		$newAuthorHash = strtolower($newAuthorHash);
@@ -223,7 +232,7 @@ class Author implements \JsonSerializable {
 		//store the hash
 		$this->authorHash = $newAuthorHash;
 	}
-		//enforce the hash is a string representation of a hexadecimal
+	//enforce the hash is a string representation of a hexadecimal
 
 	/**
 	 * accessor method for author username
@@ -233,6 +242,7 @@ class Author implements \JsonSerializable {
 	public function getAuthorUsername(): string {
 		return $this->authorUsername;
 	}
+
 	/**
 	 * mutator method for author username
 	 *
@@ -243,7 +253,7 @@ class Author implements \JsonSerializable {
 	public function setAuthorUsername(string $newAuthorUsername): void {
 		//verify username is secure
 		$newAuthorUsername = trim($newAuthorUsername);
-		$newAuthorUsername = filter_var($newAuthorUsername,FILTER_SANITIZE_STRING,);
+		$newAuthorUsername = filter_var($newAuthorUsername, FILTER_SANITIZE_STRING,);
 		if(empty($newAuthorUsername) === true) {
 			throw (new \InvalidArgumentException("username is not valid"));
 		}
@@ -259,7 +269,24 @@ class Author implements \JsonSerializable {
 	 * @since 5.4.0
 	 */
 	public function jsonSerialize() {
-		// TODO: Implement jsonSerialize() method.
+		$fields = get_object_vars($this);
+		$fields["authorId"] = $this->authorId->toString();
+		unset($fields["authorHash"]);
+		return ($fields);
 	}
-}
+
+
+/**
+ * inserts this Author into mySQL
+ *
+ * @param \PDO $pdo PDO connection object
+ * @throws \PDOException when mySQL related errors occur
+ * @throws \TypeError if $pdo is not a PDO connection object
+**/
+public function insert(\PDO $pdo) : void {
+
+	//create query template
+	$query = "INSERT INTO author(authorId, authorActivationToken, authorAvatarUrl, authorEmail, authorHash, authorUsername) VALUES (:authorId, :authoActivationToken, :authorAvatarUrl, :authorEmail, :authorHash, :authorUsername)";
+	$statement = $pdo->prepare($query);
+	}
 ?>
