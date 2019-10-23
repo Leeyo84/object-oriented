@@ -369,4 +369,36 @@ class Author implements \JsonSerializable {
 		}
 		return($authorUsername);
 	}
+
+	/**
+	 * gets all Tweets
+	 *
+	 * @param \PDO $pdo PDO connection object
+	 * @return \SplFixedArray SplFixedArray of authorUsernames found or null if not found
+	 * @throws \PDOException when mySQL related errors occur
+	 * @throws \TypeError when variables are not the correct data type
+	 **/
+	public static function getAllAuthorUsernameByAuthorId(\PDO $pdo) : \SPLFixedArray {
+		// create query template
+		$query = "SELECT authorId, authorActivationToken, authorAvatarUrl, authorEmail, authorHash, authorUsername FROM author WHERE authorId";
+		$statement = $pdo->prepare($query);
+		$statement->execute();
+
+		// build an array of authors
+		$authorUsername = new \SplFixedArray($statement->rowCount());
+		$statement->setFetchMode(\PDO::FETCH_ASSOC);
+		while(($row = $statement->fetch()) !== false) {
+			try {
+				$author = new Author($row["authorId"], $row["authorActivationToken"], $row["authorAvatarUrl"], $row["authorEmail"], $row["authorHash"],$row["authorUsername"]);
+				$authorUsername [$authorUsername ->key()] = $author;
+				$authorUsername ->next();
+			} catch(\Exception $exception) {
+				// if the row couldn't be converted, rethrow it
+				throw(new \PDOException($exception->getMessage(), 0, $exception));
+			}
+		}
+		return ($authorUsername);
+	}
+
+
 }
