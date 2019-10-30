@@ -12,9 +12,15 @@ $author = new Author('e304052d-0690-4e79-b330-f7e25df657c5',
 	'http://google.com',
 	'newAuthor1@yay.com',
 	'b7652be5587ad2549996c4e69578412a2458909cc844f70fd7a5df81c471ce80fd02cc109606d1cc0bf0611ee3daef21c',
-	'TestUsername');
+	'Test Username');
 
+
+echo($author->getAuthorId());
+echo($author->getAuthorActivationToken());
+echo($author->getAuthorAvatarUrl());
+echo($author->getAuthorEmail());
+echo($author->getAuthorHash());
 echo($author->getAuthorUsername());
 
-?>
+
 

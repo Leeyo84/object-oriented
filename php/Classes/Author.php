@@ -35,7 +35,7 @@ class Author implements \JsonSerializable {
 	private $authorAvatarUrl;
 	/**
 	 * this is the Author email
-	 * @var string $AuthorEmail
+	 * @var string $authorEmail
 	 */
 	private $authorEmail;
 	/**
@@ -173,15 +173,17 @@ class Author implements \JsonSerializable {
 	 *
 	 * @return int value of the author email
 	 **/
-	public function getAuthorEmail() {
-		return ($this->authorEmail());
+	public function getAuthorEmail(): string {
+		return ($this->authorEmail);
 	}
 
 	/**
 	 * mutator method for author email
 	 *
 	 * @param string $newAuthorEmail new value of email
-	 * @Throws  if $newAuthorEmail is not valid
+	 * @throws \InvalidArgumentException if $newAuthorEmail is not a valid email or insecure
+	 * @throws \RangeException if $newAuthorEmail is > 128 characters
+	 * @throws \TypeError if $newAuthorEmail is not a string
 	 **/
 	public function setAuthorEmail($newAuthorEmail) {
 		$newAuthorEmail = filter_var($newAuthorEmail, FILTER_SANITIZE_EMAIL);
@@ -259,20 +261,6 @@ class Author implements \JsonSerializable {
 		}
 		//  store the author username
 		$this->authorUsername = $newAuthorUsername;
-	}
-
-	/**
-	 * Specify data which should be serialized to JSON
-	 * @link https://php.net/manual/en/jsonserializable.jsonserialize.php
-	 * @return mixed data which can be serialized by <b>json_encode</b>,
-	 * which is a value of any type other than a resource.
-	 * @since 5.4.0
-	 */
-	public function jsonSerialize() {
-		$fields = get_object_vars($this);
-		$fields["authorId"] = $this->authorId->toString();
-		unset($fields["authorHash"]);
-		return ($fields);
 	}
 
 
@@ -398,6 +386,20 @@ class Author implements \JsonSerializable {
 			}
 		}
 		return ($authorUsername);
+	}
+
+	/**
+	 * Specify data which should be serialized to JSON
+	 * @link https://php.net/manual/en/jsonserializable.jsonserialize.php
+	 * @return mixed data which can be serialized by <b>json_encode</b>,
+	 * which is a value of any type other than a resource.
+	 * @since 5.4.0
+	 */
+	public function jsonSerialize() {
+		$fields = get_object_vars($this);
+		$fields["authorId"] = $this->authorId->toString();
+		unset($fields["authorHash"]);
+		return ($fields);
 	}
 
 
